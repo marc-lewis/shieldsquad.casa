@@ -1,8 +1,17 @@
 module.exports = {
-  extends: [
-    'stylelint-config-standard'
+  plugins: [
+    'stylelint-scss',
+    'stylelint-order'
   ],
   // add your custom config here
   // https://stylelint.io/user-guide/configuration
-  rules: {}
+  rules: {
+    'order/properties-alphabetical-order': true,
+    'property-no-unknown': [
+      true,
+      {
+        ignoreProperties: ['colour']
+      }
+    ]
+  }
 }

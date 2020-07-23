@@ -1,5 +1,9 @@
 # shieldsquad.casa
 
+The homepage for the 🙏 Blessed 🙏 🛡SHIELD SQUAD🛡.
+
+The content is managed through [Contentful](https://contentful.com)
+
 ## Build Setup
 
 ```bash

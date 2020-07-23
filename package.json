@@ -16,7 +16,8 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.11.0",
     "contentful": "^7.14.5",
-    "nuxt": "^2.13.0"
+    "nuxt": "^2.13.0",
+    "stylelint-scss": "^3.18.0"
   },
   "devDependencies": {
     "@nuxtjs/dotenv": "^1.4.1",
@@ -35,6 +36,7 @@
     "sass-loader": "^9.0.2",
     "stylelint": "^13.6.1",
     "stylelint-config-standard": "^20.0.0",
+    "stylelint-order": "^4.1.0",
     "vue-jest": "^3.0.4"
   }
 }

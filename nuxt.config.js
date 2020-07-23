@@ -47,7 +47,7 @@ export default {
     }
   ],
   styleResources: {
-    scss: ['./assets/styles/*.scss']
+    scss: ['./assets/styles/variables/variables.scss']
   },
   /*
   ** Plugins to load before mounting the App

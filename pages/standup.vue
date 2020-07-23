@@ -3,7 +3,7 @@
     <member-form
       v-if="!slotMachineActive"
       :members="squadMembers"
-      @changeMembers="showQuestionnaire($event)"
+      @updateMembers="showQuestionnaire($event)"
     />
     <slot-machine
       v-else
