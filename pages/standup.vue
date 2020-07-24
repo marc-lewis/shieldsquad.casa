@@ -1,5 +1,8 @@
 <template>
-  <main>
+  <main class="standup">
+    <h1 class="standup__title">
+      The Choosening
+    </h1>
     <member-form
       v-if="!slotMachineActive"
       :members="squadMembers"
@@ -13,8 +16,8 @@
 </template>
 <script>
 import { createClient } from '~/plugins/contentful.js'
-import { MemberForm } from '~/components/MemberForm'
-import { SlotMachine } from '~/components/SlotMachine/SlotMachine'
+import MemberForm from '~/components/MemberForm'
+import SlotMachine from '~/components/SlotMachine/SlotMachine'
 
 const client = createClient()
 
@@ -59,3 +62,18 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.standup {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.standup__title {
+  @include arial;
+  color: $zavaBlue;
+  font-size: 80px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+</style>

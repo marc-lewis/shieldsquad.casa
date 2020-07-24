@@ -1,8 +1,5 @@
 <template>
   <section class="memberForm">
-    <h1 class="memberForm__title">
-      The Choosening
-    </h1>
     <h1 class="memberForm__subtitle">
       Which members of SQUAD SHIELD do you need?
     </h1>
@@ -26,19 +23,23 @@
           </label>
         </li>
       </ul>
-      <button
+      <zava-button
         type="submit"
-        class="memberForm__submit"
       >
-        Spin!
-      </button>
+        These members are present
+      </zava-button>
     </form>
   </section>
 </template>
 
 <script>
+import ZavaButton from '~/components/ZavaButton'
+
 export default {
   name: 'MemberForm',
+  components: {
+    ZavaButton
+  },
   props: {
     members: {
       type: Array,
@@ -59,14 +60,6 @@ export default {
   display: flex;
   flex-direction: column;
   margin-top: 50px;
-}
-.memberForm__title {
-  @include arial;
-  color: $zavaBlue;
-  display: flex;
-  font-size: 80px;
-  font-weight: bold;
-  margin-top: 20px;
 }
 
 .memberForm__subtitle {
@@ -118,7 +111,7 @@ export default {
   font-size: 18px;
   font-weight: bold;
   margin: 25px auto 0;
-  padding: 15px 40px;
+  padding: 10px 30px;
 
   &:hover {
     background: white;
