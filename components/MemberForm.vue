@@ -12,7 +12,7 @@
     >
       <ul class="memberForm__list">
         <li
-          v-for="member in sortMembers(members)"
+          v-for="member in members"
           :key="member.name"
           class="memberForm__member"
         >
@@ -48,11 +48,6 @@ export default {
   methods: {
     updateMembers () {
       this.$emit('updateMembers', this.members)
-    },
-    sortMembers (members) {
-      return members.sort((a, b) => {
-        return a.name > b.name ? 1 : -1
-      })
     }
   }
 }

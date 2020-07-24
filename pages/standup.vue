@@ -37,7 +37,9 @@ export default {
       })
 
       return {
-        squadMembers
+        squadMembers: squadMembers.sort((a, b) => {
+          return a.name > b.name ? 1 : -1
+        })
       }
     }).catch(console.error)
   },
