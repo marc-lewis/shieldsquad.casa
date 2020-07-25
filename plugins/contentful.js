@@ -6,6 +6,8 @@ const config = {
   accessToken: process.env.CTF_CDA_ACCESS_TOKEN
 }
 
+console.log(config)
+
 module.exports = {
   createClient () {
     return contentful.createClient(config)
