@@ -79,7 +79,7 @@ export default {
   }
 
   a:hover {
-    color: yellow;
+    color: $zavaOrange;
   }
 }
 </style>

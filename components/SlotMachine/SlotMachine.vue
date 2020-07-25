@@ -132,7 +132,7 @@ export default {
         this.enticingTimeouts.push(window.setTimeout(() => {
           reel.classList.add('slotMachine__reel--entice')
         },
-        1000 * (i + 1)))
+        800 * (i + 1)))
       })
     },
 
@@ -186,7 +186,7 @@ export default {
               reel.style.transform = `rotateX(-${cardPosition}deg)`
               resolve()
             },
-            1000 + (1000 * i))
+            1500 + (800 * i))
           })
         )
       })
@@ -237,7 +237,7 @@ export default {
 }
 
 .slotMachine__card--winner {
-  animation: animateWinner steps(1, end) 2s normal infinite;
+  animation: animateWinner steps(1, end) 1.75s normal infinite;
 }
 
 .slotMachine__reel--entice {
