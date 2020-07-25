@@ -1,7 +1,6 @@
 <template>
   <section class="slotMachine">
     <div class="slotMachine__face">
-
       <div
         v-for="(reel, i) in reels"
         :key="i"
@@ -206,12 +205,15 @@ export default {
   align-items: center;
   display: flex;
   flex-direction: column;
+  margin-top: 50px;
 }
 .slotMachine__face {
+  animation: sway 20s ease-in-out infinite;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  perspective: 1000px;
+  perspective: 2000px;
+  transform-style: preserve-3d;
 }
 .slotMachine__reel {
   height: 80px;
@@ -222,7 +224,8 @@ export default {
 .slotMachine__card {
   @include arial;
   align-items: center;
-  backface-visibility: hidden;
+  // backface-visibility: hidden;
+  background: white;
   border: 2px solid $zavaBlue;
   border-radius: 5px;
   color: $zavaBlue;
@@ -248,9 +251,24 @@ export default {
   animation: 1s infinite linear forwards spinWheel;
 }
 
+@keyframes sway {
+  0% {
+    transform: rotateY(0deg);
+  }
+  25% {
+    transform: rotateY(-10deg);
+  }
+  50% {
+    transform: rotateY(0deg);
+  }
+  75% {
+    transform: rotateY(10deg);
+  }
+}
+
 @keyframes animateWinner {
   0% {
-    background: transparent;
+    background: white;
     color: $zavaBlue;
   }
   50% {
