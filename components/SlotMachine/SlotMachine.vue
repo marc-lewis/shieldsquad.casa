@@ -41,7 +41,6 @@ export default {
   data () {
     return {
       enticingTimeouts: [],
-      radiusToCard: (80 / 2) / Math.tan(Math.tan(Math.PI / this.members.length)),
       selectingMember: false
     }
   },
@@ -52,6 +51,13 @@ export default {
         reels.push(this.getRandomisedOrderOfMembers())
       }
       return reels
+    },
+    radiusToCard () {
+      if (this.members.length === 2) {
+        return 4
+      } else {
+        return ((80 / 2) / (Math.tan(Math.PI / this.members.length)))
+      }
     }
   },
   mounted () {
@@ -273,7 +279,7 @@ export default {
     background: white;
     color: $zavaBlue;
   }
-  50% {
+  20% {
     background: $zavaOrange;
     color: white;
   }
