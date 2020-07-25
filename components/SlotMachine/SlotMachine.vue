@@ -3,14 +3,14 @@
     <div class="slotMachine__face">
 
       <div
-        v-for="(reel, index) in reels"
-        :key="index"
-        :class="['slotMachine__reel', `slotMachine__reel--${index}`]"
+        v-for="(reel, i) in reels"
+        :key="i"
+        :class="'slotMachine__reel'"
       >
         <div
-          v-for="member in reel"
+          v-for="(member, j) in reel"
           :key="member"
-          class="slotMachine__card"
+          :class="['slotMachine__card', `slotMachine__card--${j}`]"
         >
           {{ member }}
         </div>
@@ -142,11 +142,21 @@ export default {
       }
     },
 
+    resetCardWinners () {
+      const winningCards = document.querySelectorAll('.slotMachine__card--winner')
+      if (winningCards) {
+        winningCards.forEach((card) => {
+          card.classList.remove('slotMachine__card--winner')
+        })
+      }
+    },
+
     /**
      * Oh boy
      */
     selectMember () {
       this.selectingMember = true
+      this.resetCardWinners()
 
       // spin all unilaterally
       this.applyToReels((reel, i) => {
@@ -183,6 +193,9 @@ export default {
 
       Promise.all(animationPromises).then(() => {
         this.selectingMember = false
+        this.applyToReels((reel, i) => {
+          reel.querySelector(`.slotMachine__card--${reelIndicies[i]}`).classList.add('slotMachine__card--winner')
+        })
       })
     }
   }
@@ -223,12 +236,27 @@ export default {
   width: 120px;
 }
 
+.slotMachine__card--winner {
+  animation: animateWinner steps(1, end) 2s normal infinite;
+}
+
 .slotMachine__reel--entice {
   animation: 5s infinite linear forwards rotateReelEnticingly;
 }
 
 .slotMachine__reel--spin {
   animation: 1s infinite linear forwards spinWheel;
+}
+
+@keyframes animateWinner {
+  0% {
+    background: transparent;
+    color: $zavaBlue;
+  }
+  50% {
+    background: $zavaOrange;
+    color: white;
+  }
 }
 
 @keyframes rotateReelEnticingly {
