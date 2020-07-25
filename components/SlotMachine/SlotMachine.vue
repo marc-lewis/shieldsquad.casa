@@ -216,10 +216,12 @@ export default {
   transform-style: preserve-3d;
 }
 .slotMachine__reel {
+  animation: reelSplit 10s ease-in-out infinite;
   height: 80px;
+  padding: 0 2px;
   position: relative;
   transform-style: preserve-3d;
-  width: 120px;
+  width: 124px;
 }
 .slotMachine__card {
   @include arial;
@@ -256,13 +258,13 @@ export default {
     transform: rotateY(0deg);
   }
   25% {
-    transform: rotateY(-10deg);
+    transform: rotateY(-15deg);
   }
   50% {
     transform: rotateY(0deg);
   }
   75% {
-    transform: rotateY(10deg);
+    transform: rotateY(15deg);
   }
 }
 
