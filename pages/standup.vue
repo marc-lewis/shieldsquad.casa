@@ -57,6 +57,14 @@ export default {
       this.membersPresent = members.filter((member) => {
         return member.present
       })
+      if (this.membersPresent.length <= 1) {
+        this.membersPresent = [
+          { name: 'yes' },
+          { name: 'no' },
+          { name: 'maybe' },
+          { name: 'spin again' }
+        ]
+      }
       this.slotMachineActive = true
     }
   }
