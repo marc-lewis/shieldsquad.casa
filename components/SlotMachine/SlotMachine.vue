@@ -1,27 +1,14 @@
 <template>
   <section class="slotMachine">
     <div class="slotMachine__face">
-      <div class="slotMachine__reel">
+
+      <div
+        v-for="(reel, index) in reels"
+        :key="index"
+        :class="['slotMachine__reel', `slotMachine__reel--${index}`]"
+      >
         <div
-          v-for="member in reelOne"
-          :key="member"
-          class="slotMachine__card"
-        >
-          {{ member }}
-        </div>
-      </div>
-      <div class="slotMachine__reel">
-        <div
-          v-for="member in reelTwo"
-          :key="member"
-          class="slotMachine__card"
-        >
-          {{ member }}
-        </div>
-      </div>
-      <div class="slotMachine__reel">
-        <div
-          v-for="member in reelThree"
+          v-for="member in reel"
           :key="member"
           class="slotMachine__card"
         >
@@ -29,7 +16,10 @@
         </div>
       </div>
     </div>
-    <zava-button>
+    <zava-button
+      v-if="!selectingMember"
+      @click.native="selectMember"
+    >
       SPIN
     </zava-button>
   </section>
@@ -49,20 +39,25 @@ export default {
       default: () => { return [] }
     }
   },
+  data () {
+    return {
+      enticingTimeouts: [],
+      radiusToCard: (80 / 2) / Math.tan(Math.tan(Math.PI / this.members.length)),
+      selectingMember: false
+    }
+  },
   computed: {
-    reelOne () {
-      return this.getRandomisedOrderOfMembers()
-    },
-    reelTwo () {
-      return this.getRandomisedOrderOfMembers()
-    },
-    reelThree () {
-      return this.getRandomisedOrderOfMembers()
+    reels () {
+      const reels = []
+      for (let i = 0; i < 4; i++) {
+        reels.push(this.getRandomisedOrderOfMembers())
+      }
+      return reels
     }
   },
   mounted () {
     this.setUpSlotMachine()
-    this.animateSlotMachine()
+    this.runEnticingAnimation()
   },
   methods: {
     /**
@@ -95,39 +90,100 @@ export default {
 
     /**
      * Position the cards within a reel
+     * @returns {void}
      */
     setUpReel (reel) {
       const cards = reel.querySelectorAll('.slotMachine__card')
       const numOfCards = cards.length
       const spokeAngle = 360 / numOfCards
-      const cardHeight = 80 // see height of .slotMachine__card
-      const distanceToCard = (cardHeight / 2) / Math.tan(Math.tan(Math.PI / numOfCards))
 
-      reel.style.margin = `${distanceToCard}px 0`
+      reel.style.margin = `${this.radiusToCard}px 0`
+
       for (let i = 0; i < numOfCards; i++) {
-        cards[i].style.transform = `rotateX(${(spokeAngle) * (i)}deg) translateZ(${distanceToCard}px)`
+        cards[i].style.transform = `rotateX(${(spokeAngle) * (i)}deg) translateZ(${this.radiusToCard}px)`
+      }
+    },
+
+    /**
+     * Apply a callback to all reels
+     * @param {function} callback — Apply a callback to a reel
+     * @returns {void}
+     */
+    applyToReels (callback) {
+      const reels = document.querySelectorAll('.slotMachine__reel')
+      for (let i = 0; i < reels.length; i++) {
+        callback(reels[i], i)
       }
     },
 
     /*
-     * Apply 3d transforms for cards
      * @returns {void}
      */
     setUpSlotMachine () {
-      const reels = document.querySelectorAll('.slotMachine__reel')
-      for (let i = 0; i < reels.length; i++) {
-        this.setUpReel(reels[i])
+      this.applyToReels(this.setUpReel)
+    },
+
+    /**
+     * Basic animations for the reels when landing on the view
+     * @returns {void}
+     */
+    runEnticingAnimation () {
+      this.applyToReels((reel, i) => {
+        this.enticingTimeouts.push(window.setTimeout(() => {
+          reel.classList.add('slotMachine__reel--entice')
+        },
+        1000 * (i + 1)))
+      })
+    },
+
+    clearEnticingAnimations () {
+      for (let i = 0; i < this.enticingTimeouts.length; i++) {
+        window.clearTimeout(this.enticingTimeouts[i])
       }
     },
 
-    animateSlotMachine () {
-      const reels = document.querySelectorAll('.slotMachine__reel')
-      for (let i = 0; i < reels.length; i++) {
-        window.setTimeout(() => {
-          reels[i].classList.add('slotMachine__reel--rotate')
-        },
-        515 * i)
-      }
+    /**
+     * Oh boy
+     */
+    selectMember () {
+      this.selectingMember = true
+
+      // spin all unilaterally
+      this.applyToReels((reel, i) => {
+        const computedStyle = window.getComputedStyle(reel)
+        reel.style.transform = computedStyle.getPropertyValue('transform')
+        this.clearEnticingAnimations()
+        reel.classList.remove('slotMachine__reel--entice')
+        reel.classList.add('slotMachine__reel--spin')
+      })
+
+      // get random member
+      const selectedMember = this.members[Math.round(Math.random() * this.members.length)].name
+      const reelIndicies = this.reels.map((reel) => {
+        return reel.indexOf(selectedMember)
+      })
+
+      const animationPromises = []
+      // spin reels to member
+      this.applyToReels((reel, i) => {
+        animationPromises.push(
+          new Promise((resolve, reject) => {
+            window.setTimeout(() => {
+              const computedStyle = window.getComputedStyle(reel)
+              reel.style.transform = computedStyle.getPropertyValue('transform')
+              reel.classList.remove('slotMachine__reel--spin')
+              const cardPosition = reelIndicies[i] * (360 / this.members.length) + 360
+              reel.style.transform = `rotateX(-${cardPosition}deg)`
+              resolve()
+            },
+            1000 + (1000 * i))
+          })
+        )
+      })
+
+      Promise.all(animationPromises).then(() => {
+        this.selectingMember = false
+      })
     }
   }
 }
@@ -167,11 +223,15 @@ export default {
   width: 120px;
 }
 
-.slotMachine__reel--rotate {
-  animation: 5s infinite linear rotateReel;
+.slotMachine__reel--entice {
+  animation: 5s infinite linear forwards rotateReelEnticingly;
 }
 
-@keyframes rotateReel {
+.slotMachine__reel--spin {
+  animation: 1s infinite linear forwards spinWheel;
+}
+
+@keyframes rotateReelEnticingly {
   0% {
     transform: rotateX(0deg);
   }
@@ -185,4 +245,14 @@ export default {
     transform: rotateX(-719deg);
   }
 }
+
+@keyframes spinWheel {
+  0% {
+    transform: rotateX(0deg);
+  }
+  100% {
+    transform: rotateX(-359deg);
+  }
+}
+
 </style>
