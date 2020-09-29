@@ -4,7 +4,7 @@
     class="reel"
   >
     <div
-      v-for="(card, i) in cards"
+      v-for="(card, i) in randomisedCards"
       :key="i"
       ref="card"
       :class="['reel__card', `slotMachine__card--${i}`]"
@@ -18,7 +18,7 @@
 export default {
   name: 'Reel',
   props: {
-    members: {
+    cards: {
       type: Array,
       default: () => []
     },
@@ -26,7 +26,7 @@ export default {
       type: Number,
       default: 0
     },
-    cardWinner: {
+    selectedCard: {
       type: String,
       default: ''
     }
@@ -35,8 +35,11 @@ export default {
     return {
       wheelPos: 0,
       linearSpinAnimation: undefined,
-      // rotate at 1 degree per second
-      rotationSpeed: 360 / 60,
+      // rotate six times per minute in seconds
+      rotationSpeed: (360 * 6) / 60,
+      selectSpinAnimation: undefined,
+      selectSpinSpeed: (360 * 12) / 60,
+      selectedSpinDuration: 3,
       oldTime: undefined
     }
   },
@@ -45,17 +48,17 @@ export default {
      * The cards for the reel
      * @returns array
      */
-    cards () {
-      return this.shuffle(this.members)
+    randomisedCards () {
+      return this.shuffle(this.cards)
     },
     /**
      * Calculate the radius from the center of the wheel to the card
      */
     radiusToCard () {
-      if (this.members.length === 2) {
+      if (this.cards.length === 2) {
         return 4
       } else {
-        return 80 / 2 / Math.tan(Math.PI / this.members.length)
+        return 80 / 2 / Math.tan(Math.PI / this.cards.length)
       }
     }
   },

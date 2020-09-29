@@ -10,7 +10,7 @@
     />
     <slot-machine
       v-else
-      :members="membersPresent"
+      :cards="membersPresent"
     />
   </main>
 </template>

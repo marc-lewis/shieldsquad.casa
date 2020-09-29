@@ -4,13 +4,13 @@
       <template v-for="i in reels">
         <reel
           :key="i"
-          :members="members"
+          :cards="cards"
           :reel-index="i"
-          :card-winner="cardWinner"
+          :selected-card="selectedCard"
         />
       </template>
     </div>
-    <zava-button v-if="!selectingMember" @click.native="selectMember">
+    <zava-button v-if="!selectingCard" @click.native="selectCard">
       SPIN
     </zava-button>
   </section>
@@ -27,7 +27,7 @@ export default {
     ZavaButton
   },
   props: {
-    members: {
+    cards: {
       type: Array,
       default: () => {
         return []
@@ -36,20 +36,20 @@ export default {
   },
   data () {
     return {
-      selectingMember: false,
-      reels: [1],
-      cardWinner: ''
+      selectingCard: false,
+      reels: [1, 2, 3],
+      selectedCard: ''
     }
   },
   methods: {
     /**
-     * Select a random member
+     * Select a random card
      */
-    selectMember () {
-      this.selectingMember = true
+    selectCard () {
+      this.selectingCard = true
       // get random member
-      this.selectedMember = this.members[
-        Math.round(Math.random() * (this.members.length - 1))
+      this.selectedCard = this.cards[
+        Math.round(Math.random() * (this.cards.length - 1))
       ].name
     }
   }
