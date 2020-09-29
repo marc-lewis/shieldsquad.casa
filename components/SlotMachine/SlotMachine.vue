@@ -37,7 +37,7 @@ export default {
   data () {
     return {
       selectingMember: false,
-      reels: [1, 2, 3, 4, 5],
+      reels: [1],
       cardWinner: ''
     }
   },
