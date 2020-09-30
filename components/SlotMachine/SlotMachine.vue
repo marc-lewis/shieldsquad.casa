@@ -42,7 +42,7 @@ export default {
     return {
       selectingCard: false,
       reelsRegistered: false,
-      numOfReels: 5,
+      numOfReels: 4,
       selectedCard: '',
       reels: {},
       reelRegistrationWatcher: null
