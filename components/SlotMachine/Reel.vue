@@ -39,7 +39,7 @@ export default {
       rotationSpeed: (360 * 7) / 60,
       selectSpinAnimation: null,
       selectSpinSpeed: (360 * 12) / 60,
-      selectedSpinDuration: 20,
+      selectedSpinDuration: 10,
       selectedCardPosition: null,
       oldTime: null
     }
@@ -115,7 +115,7 @@ export default {
     /**
      * @see @link https://easings.net/#easeOutBack
      */
-    easeOutCubic (x) {
+    easeInOutCubic (x) {
       return 1 - Math.pow(1 - x, 3)
     },
     /**
@@ -155,14 +155,11 @@ export default {
       }
     },
     selectedCardAnimation () {
-      if (!this.oldTime) {
-        this.oldTime = Date.now()
-      }
       const deltaT = (Date.now() - this.oldTime) / 1000
       const timeRemaining = this.selectedSpinDuration - deltaT
       const animationProgress = (this.selectedSpinDuration - timeRemaining) / this.selectedSpinDuration
-      const wheelProgress = this.easeOutCubic(animationProgress)
-      const wheelEndPos = this.selectedCardPosition + 1080
+      const wheelProgress = this.easeInOutCubic(animationProgress)
+      const wheelEndPos = this.selectedCardPosition + 2160
       this.wheelPos = wheelProgress * wheelEndPos
       this.$refs.reel.style.transform = `rotateX(-${this.wheelPos}deg)`
       if (this.wheelPos >= wheelEndPos) {
@@ -178,7 +175,10 @@ export default {
       this.stopSpinAnimations()
       const cardIndex = this.getIndexOfCard(this.selectedCard)
       this.selectedCardPosition = (360 / this.cards.length) * cardIndex
-      this.selectSpinAnimation = this.selectedCardAnimation()
+      window.setTimeout(() => {
+        this.oldTime = Date.now()
+        this.selectSpinAnimation = this.selectedCardAnimation()
+      }, 200 * this.reelIndex)
     }
   }
 }
