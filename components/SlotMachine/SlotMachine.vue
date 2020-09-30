@@ -53,6 +53,21 @@ export default {
       return !this.selectingCard && this.reelsRegistered
     }
   },
+  watch: {
+    reels: {
+      handler (reels) {
+        // eslint-disable-next-line
+        for (const [reelIndex, reelAnimation] of Object.entries(reels)) {
+          if (reelAnimation === 'selection') {
+            this.selectingCard = true
+            return
+          }
+        }
+        this.selectingCard = false
+      },
+      deep: true
+    }
+  },
   created () {
     this.reelRegistrationWatcher = this.$watch('reels', this.reelRegistrationHandler, { deep: true })
   },
@@ -61,13 +76,13 @@ export default {
      * Select a random card
      */
     selectCard () {
-      this.selectingCard = true
       this.selectedCard = this.cards[
         Math.round(Math.random() * (this.cards.length - 1))
       ].name
     },
     /**
      * Register a wheel
+     * @listens updateReelState
      */
     updateReelState (reelState) {
       this.$set(this.reels, reelState.reelIndex, reelState.spinType)

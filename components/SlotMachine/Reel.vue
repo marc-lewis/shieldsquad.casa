@@ -73,14 +73,21 @@ export default {
     this.setUpReel()
     window.setTimeout(() => {
       this.spinReelLinear()
-      this.$emit('updateReelState',
-        {
-          reelIndex: this.reelIndex,
-          spinType: 'linear'
-        })
+      this.updateReelState('linear')
     }, 125 * this.reelIndex)
   },
   methods: {
+    /**
+     * Emit the reel state for any listeners
+     * @fires updateReelState
+     */
+    updateReelState (spinType) {
+      this.$emit('updateReelState',
+        {
+          reelIndex: this.reelIndex,
+          spinType
+        })
+    },
     /**
      * @see {@link https://stackoverflow.com/a/2450976}
      * @param {array} array - The array to shuffle
@@ -169,6 +176,12 @@ export default {
       this.$refs.card[cardIndex].classList.add('reel__card--winner')
     },
     /**
+     * Remove highlighted card animation
+     */
+    removeSelectedCardHighlight () {
+      document.querySelector('.reel__card--winner')?.classList.remove('reel__card--winner')
+    },
+    /**
      * The animation to spin the reel when a card is selected
      */
     selectedCardAnimation () {
@@ -182,6 +195,7 @@ export default {
       if (this.wheelPos >= wheelEndPos) {
         cancelAnimationFrame(this.selectedCardAnimation)
         this.highlightSelectedCard(this.getIndexOfCard(this.selectedCard))
+        this.updateReelState('stopped')
       } else {
         this.selectSpinAnimation = window.requestAnimationFrame(this.selectedCardAnimation)
       }
@@ -190,12 +204,14 @@ export default {
      * The controller for the selected card animation
      */
     spinToSelectedCard () {
+      this.removeSelectedCardHighlight()
       this.stopSpinAnimations()
       const cardIndex = this.getIndexOfCard(this.selectedCard)
       this.selectedCardPosition = (360 / this.cards.length) * cardIndex
       window.setTimeout(() => {
         this.oldTime = Date.now()
         this.selectSpinAnimation = this.selectedCardAnimation()
+        this.updateReelState('selection')
       }, 200 * this.reelIndex)
     }
   }
