@@ -70,12 +70,14 @@ export default {
   },
   mounted () {
     this.setUpReel()
-    this.spinReelLinear()
-    this.$emit('updateReelState',
-      {
-        reelIndex: this.reelIndex,
-        spinType: 'linear'
-      })
+    window.setTimeout(() => {
+      this.spinReelLinear()
+      this.$emit('updateReelState',
+        {
+          reelIndex: this.reelIndex,
+          spinType: 'linear'
+        })
+    }, 125 * this.reelIndex)
   },
   methods: {
     /**
@@ -154,6 +156,9 @@ export default {
         }
       }
     },
+    highlightSelectedCard (cardIndex) {
+      this.$refs.card[cardIndex].classList.add('reel__card--winner')
+    },
     selectedCardAnimation () {
       const deltaT = (Date.now() - this.oldTime) / 1000
       const timeRemaining = this.selectedSpinDuration - deltaT
@@ -164,6 +169,7 @@ export default {
       this.$refs.reel.style.transform = `rotateX(-${this.wheelPos}deg)`
       if (this.wheelPos >= wheelEndPos) {
         cancelAnimationFrame(this.selectedCardAnimation)
+        this.highlightSelectedCard(this.getIndexOfCard(this.selectedCard))
       } else {
         this.selectSpinAnimation = window.requestAnimationFrame(this.selectedCardAnimation)
       }
