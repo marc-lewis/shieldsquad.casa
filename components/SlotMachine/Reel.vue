@@ -47,13 +47,14 @@ export default {
   computed: {
     /**
      * The cards for the reel
-     * @returns array
+     * @returns {array} A randomised order of cards
      */
     randomisedCards () {
       return this.shuffle(this.cards)
     },
     /**
      * Calculate the radius from the center of the wheel to the card
+     * @returns number - The radius of the reel
      */
     radiusToCard () {
       if (this.cards.length === 2) {
@@ -82,7 +83,8 @@ export default {
   methods: {
     /**
      * @see {@link https://stackoverflow.com/a/2450976}
-     * @returns Array
+     * @param {array} array - The array to shuffle
+     * @returns {Array} - A randomised array
      */
     shuffle (array) {
       const shuffleableArray = [...array]
@@ -115,9 +117,11 @@ export default {
       })
     },
     /**
+     * @param {Number} x - A value from 0 - 1
+     * @returns Number - A value from 0 - 1
      * @see @link https://easings.net/#easeOutBack
      */
-    easeInOutCubic (x) {
+    easeOutCubic (x) {
       return 1 - Math.pow(1 - x, 3)
     },
     /**
@@ -147,7 +151,9 @@ export default {
       cancelAnimationFrame(this.selectSpinAnimation)
     },
     /**
-     *
+     * Get the index of a card
+     * @param {number} cardName - The cardName to lookup
+     * @returns {number} - The index of cardName in the reel
      */
     getIndexOfCard (cardName) {
       for (let i = 0; i < this.randomisedCards.length; i++) {
@@ -156,14 +162,20 @@ export default {
         }
       }
     },
+    /**
+     * Highlight a card
+     */
     highlightSelectedCard (cardIndex) {
       this.$refs.card[cardIndex].classList.add('reel__card--winner')
     },
+    /**
+     * The animation to spin the reel when a card is selected
+     */
     selectedCardAnimation () {
       const deltaT = (Date.now() - this.oldTime) / 1000
       const timeRemaining = this.selectedSpinDuration - deltaT
       const animationProgress = (this.selectedSpinDuration - timeRemaining) / this.selectedSpinDuration
-      const wheelProgress = this.easeInOutCubic(animationProgress)
+      const wheelProgress = this.easeOutCubic(animationProgress)
       const wheelEndPos = this.selectedCardPosition + 2160
       this.wheelPos = wheelProgress * wheelEndPos
       this.$refs.reel.style.transform = `rotateX(-${this.wheelPos}deg)`
@@ -175,7 +187,7 @@ export default {
       }
     },
     /**
-     *
+     * The controller for the selected card animation
      */
     spinToSelectedCard () {
       this.stopSpinAnimations()
