@@ -34,13 +34,14 @@ export default {
   data () {
     return {
       wheelPos: 0,
-      linearSpinAnimation: undefined,
+      linearSpinAnimation: null,
       // rotate seven times per minute in seconds
       rotationSpeed: (360 * 7) / 60,
-      selectSpinAnimation: undefined,
+      selectSpinAnimation: null,
       selectSpinSpeed: (360 * 12) / 60,
-      selectedSpinDuration: 3,
-      oldTime: undefined
+      selectedSpinDuration: 20,
+      selectedCardPosition: null,
+      oldTime: null
     }
   },
   computed: {
@@ -114,22 +115,8 @@ export default {
     /**
      * @see @link https://easings.net/#easeOutBack
      */
-    easeOutBack (x) {
-      const c1 = 1.70158
-      const c3 = c1 + 1
-
-      return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2)
-    },
-    /**
-     * @link https://www.youtube.com/watch?v=IAAKG57ouyM
-     */
-    rotateWheelToFinish (reel, currentPosition, cardPosition) {
-      const spins = 2
-      const spinEnd = spins * 360 + cardPosition
-      // const secondsToSpin = 2
-      window.requestAnimationFrame(() => {
-        reel.style.transform = `rotateX(-${spinEnd}deg)`
-      })
+    easeOutCubic (x) {
+      return 1 - Math.pow(1 - x, 3)
     },
     /**
      * Spin the wheel linearly
@@ -161,11 +148,27 @@ export default {
      *
      */
     getIndexOfCard (cardName) {
-      console.log(this.randomisedCards)
       for (let i = 0; i < this.randomisedCards.length; i++) {
         if (this.randomisedCards[i].name === cardName) {
           return i
         }
+      }
+    },
+    selectedCardAnimation () {
+      if (!this.oldTime) {
+        this.oldTime = Date.now()
+      }
+      const deltaT = (Date.now() - this.oldTime) / 1000
+      const timeRemaining = this.selectedSpinDuration - deltaT
+      const animationProgress = (this.selectedSpinDuration - timeRemaining) / this.selectedSpinDuration
+      const wheelProgress = this.easeOutCubic(animationProgress)
+      const wheelEndPos = this.selectedCardPosition + 1080
+      this.wheelPos = wheelProgress * wheelEndPos
+      this.$refs.reel.style.transform = `rotateX(-${this.wheelPos}deg)`
+      if (this.wheelPos >= wheelEndPos) {
+        cancelAnimationFrame(this.selectedCardAnimation)
+      } else {
+        this.selectSpinAnimation = window.requestAnimationFrame(this.selectedCardAnimation)
       }
     },
     /**
@@ -174,10 +177,8 @@ export default {
     spinToSelectedCard () {
       this.stopSpinAnimations()
       const cardIndex = this.getIndexOfCard(this.selectedCard)
-      const cardPosition = (360 / this.cards.length) * cardIndex
-      window.requestAnimationFrame(() => {
-        this.$refs.reel.style.transform = `rotateX(-${cardPosition}deg)`
-      })
+      this.selectedCardPosition = (360 / this.cards.length) * cardIndex
+      this.selectSpinAnimation = this.selectedCardAnimation()
     }
   }
 }
