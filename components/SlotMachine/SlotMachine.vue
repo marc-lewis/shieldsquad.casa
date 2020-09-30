@@ -1,16 +1,20 @@
 <template>
   <section class="slotMachine">
     <div class="slotMachine__face">
-      <template v-for="i in reels">
+      <template v-for="i in numOfReels">
         <reel
           :key="i"
           :cards="cards"
           :reel-index="i"
           :selected-card="selectedCard"
+          @updateReelState="updateReelState($event)"
         />
       </template>
     </div>
-    <zava-button v-if="!selectingCard" @click.native="selectCard">
+    <zava-button
+      v-if="showSpinButton"
+      @click.native="selectCard"
+    >
       SPIN
     </zava-button>
   </section>
@@ -37,9 +41,20 @@ export default {
   data () {
     return {
       selectingCard: false,
-      reels: [1, 2, 3],
-      selectedCard: ''
+      reelsRegistered: false,
+      numOfReels: 3,
+      selectedCard: '',
+      reels: {},
+      reelRegistrationWatcher: null
     }
+  },
+  computed: {
+    showSpinButton () {
+      return !this.selectingCard && this.reelsRegistered
+    }
+  },
+  created () {
+    this.reelRegistrationWatcher = this.$watch('reels', this.reelRegistrationHandler, { deep: true })
   },
   methods: {
     /**
@@ -47,10 +62,26 @@ export default {
      */
     selectCard () {
       this.selectingCard = true
-      // get random member
       this.selectedCard = this.cards[
         Math.round(Math.random() * (this.cards.length - 1))
       ].name
+    },
+    /**
+     * Register a wheel
+     */
+    updateReelState (reelState) {
+      this.$set(this.reels, reelState.reelIndex, reelState.spinType)
+    },
+    /**
+     * Wait for all reels to be registered
+     * By calling the watcher again we will 'unwatch'
+     * @link https://vuejs.org/v2/api/#vm-watch
+     */
+    reelRegistrationHandler (oldVal, newVal) {
+      if (Object.keys(this.reels).length === this.numOfReels) {
+        this.reelsRegistered = true
+        this.reelRegistrationWatcher()
+      }
     }
   }
 }

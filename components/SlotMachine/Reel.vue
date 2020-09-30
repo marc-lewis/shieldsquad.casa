@@ -35,8 +35,8 @@ export default {
     return {
       wheelPos: 0,
       linearSpinAnimation: undefined,
-      // rotate six times per minute in seconds
-      rotationSpeed: (360 * 6) / 60,
+      // rotate seven times per minute in seconds
+      rotationSpeed: (360 * 7) / 60,
       selectSpinAnimation: undefined,
       selectSpinSpeed: (360 * 12) / 60,
       selectedSpinDuration: 3,
@@ -62,9 +62,19 @@ export default {
       }
     }
   },
+  watch: {
+    selectedCard () {
+      this.spinToSelectedCard()
+    }
+  },
   mounted () {
     this.setUpReel()
     this.spinReelLinear()
+    this.$emit('updateReelState',
+      {
+        reelIndex: this.reelIndex,
+        spinType: 'linear'
+      })
   },
   methods: {
     /**
@@ -72,19 +82,20 @@ export default {
      * @returns Array
      */
     shuffle (array) {
-      let currentIndex = array.length
+      const shuffleableArray = [...array]
+      let currentIndex = shuffleableArray.length
       let temporaryValue, randomIndex
 
       while (currentIndex !== 0) {
         randomIndex = Math.floor(Math.random() * currentIndex)
         currentIndex -= 1
 
-        temporaryValue = array[currentIndex]
-        array[currentIndex] = array[randomIndex]
-        array[randomIndex] = temporaryValue
+        temporaryValue = shuffleableArray[currentIndex]
+        shuffleableArray[currentIndex] = shuffleableArray[randomIndex]
+        shuffleableArray[randomIndex] = temporaryValue
       }
 
-      return array
+      return shuffleableArray
     },
     /**
      * Position the cards within a reel
@@ -120,6 +131,9 @@ export default {
         reel.style.transform = `rotateX(-${spinEnd}deg)`
       })
     },
+    /**
+     * Spin the wheel linearly
+     */
     spinReelLinear () {
       // rate of 1 degree per second
       if (!this.oldTime) {
@@ -128,9 +142,42 @@ export default {
       const deltaT = (Date.now() - this.oldTime) / 1000
       const deltaWheelPos = this.rotationSpeed * deltaT
       this.wheelPos += deltaWheelPos
+      // avoid runaway integers for wheelpos
+      if (this.wheelPos > 360) {
+        this.wheelPos -= 360
+      }
       this.$refs.reel.style.transform = `rotateX(-${this.wheelPos}deg)`
       this.oldTime = Date.now()
       this.linearSpinAnimation = requestAnimationFrame(this.spinReelLinear)
+    },
+    /**
+     * Stop all spin animations
+     */
+    stopSpinAnimations () {
+      cancelAnimationFrame(this.linearSpinAnimation)
+      cancelAnimationFrame(this.selectSpinAnimation)
+    },
+    /**
+     *
+     */
+    getIndexOfCard (cardName) {
+      console.log(this.randomisedCards)
+      for (let i = 0; i < this.randomisedCards.length; i++) {
+        if (this.randomisedCards[i].name === cardName) {
+          return i
+        }
+      }
+    },
+    /**
+     *
+     */
+    spinToSelectedCard () {
+      this.stopSpinAnimations()
+      const cardIndex = this.getIndexOfCard(this.selectedCard)
+      const cardPosition = (360 / this.cards.length) * cardIndex
+      window.requestAnimationFrame(() => {
+        this.$refs.reel.style.transform = `rotateX(-${cardPosition}deg)`
+      })
     }
   }
 }
