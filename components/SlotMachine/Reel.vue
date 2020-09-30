@@ -219,7 +219,7 @@ export default {
 }
 
 .reel__card--winner {
-  animation: animateWinner steps(1, end) 1.75s normal infinite;
+  animation: animateWinner steps(1, end) 1.5s normal infinite;
 }
 
 @keyframes animateWinner {
@@ -227,7 +227,7 @@ export default {
     background: white;
     color: $zavaBlue;
   }
-  20% {
+  12.5% {
     background: $zavaOrange;
     color: white;
   }
